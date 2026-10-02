@@ -1,5 +1,6 @@
 package ru.mipt.hw1;
 
+import java.math.BigDecimal;
 import java.util.Scanner;
 
 public class Main {
@@ -9,11 +10,11 @@ public class Main {
 
         System.out.println("Добро пожаловать, dear friend!");
 
-        Account referenceAccount = new Account(12345, 999, 10000.00, BankType.AUM);
+        Account referenceAccount = new Account(12345, 999, new BigDecimal("10000.00"), BankType.AUM);
 
         System.out.print("Введите номер карты, пожалуйста: ");
         String cardInput = scanner.nextLine().trim();
-        if (!isValidNum(cardInput)) {
+        if (!isValidNumber(cardInput)) {
             System.out.println("Номер карты должен быть числом.");
             return;
         }
@@ -21,7 +22,7 @@ public class Main {
 
         System.out.print("Введите пин-код, пожалуйста: ");
         String pinInput = scanner.nextLine().trim();
-        if (!isValidNum(pinInput)) {
+        if (!isValidNumber(pinInput)) {
             System.out.println("Пин-код должен быть числом.");
             return;
         }
@@ -32,46 +33,61 @@ public class Main {
             return;
         }
 
-        System.out.println("Вы авторизованы");
+        System.out.println("Вы авторизованы!");
         System.out.println(referenceAccount.toString());
 
         CashMachine cashMachine = new CashMachine();
 
         System.out.print("Введите сумму для внесения: ");
         String depositInput = scanner.nextLine().trim().replace(',', '.');
-        if (!isValidNum(depositInput)) {
+        if (!isValidNumber(depositInput)) {
             System.out.println("Сумма должна быть числом.");
             return;
         }
-        double depositAmount = Double.parseDouble(depositInput);
+        BigDecimal depositAmount = new BigDecimal(depositInput);
 
-        double balanceAfterDeposit = cashMachine.deposit(referenceAccount.getBalance(), depositAmount);
+        BigDecimal balanceAfterDeposit = cashMachine.deposit(referenceAccount.getBalance(), depositAmount);
         referenceAccount.balance = balanceAfterDeposit;
-        System.out.println("Баланс после внесения: " + String.format("%.2f", referenceAccount.getBalance()) + " руб.");
+        System.out.println("Баланс после внесения: " + referenceAccount.getBalance().toPlainString() + " руб.");
 
         System.out.print("Введите сумму для снятия: ");
         String withdrawInput = scanner.nextLine().trim().replace(',', '.');
-        if (!isValidNum(withdrawInput)) {
+        if (!isValidNumber(withdrawInput)) {
             System.out.println("Сумма должна быть числом.");
             return;
         }
-        double withdrawAmount = Double.parseDouble(withdrawInput);
+        BigDecimal withdrawAmount = new BigDecimal(withdrawInput);
 
-        double balanceAfterWithdraw = cashMachine.withdraw(referenceAccount.getBalance(), withdrawAmount, referenceAccount.getBankType());
+        BigDecimal balanceAfterWithdraw = cashMachine.withdraw(referenceAccount.getBalance(), withdrawAmount, referenceAccount.getBankType());
         referenceAccount.balance = balanceAfterWithdraw;
-        System.out.println("Баланс после снятия: " + String.format("%.2f", referenceAccount.getBalance()) + " руб.");
+        System.out.println("Баланс после снятия: " + referenceAccount.getBalance().toPlainString() + " руб.");
 
         System.out.println("Итоговое состояние счета: " + referenceAccount.toString());
     }
 
-    private static boolean isValidNum(String str) {
+    private static boolean isValidNumber(String str) {
         if (str == null || str.isEmpty()) {
             return false;
         }
+        int dotCount = 0;
+        int digitCount = 0;
         int startIndex = (str.charAt(0) == '-') ? 1 : 0;
         if (startIndex == str.length()) {
             return false;
         }
-        return true;
+        for (int i = startIndex; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == '.') {
+                dotCount++;
+                if (dotCount > 1) {
+                    return false;
+                }
+            } else if (Character.isDigit(c)) {
+                digitCount++;
+            } else {
+                return false;
+            }
+        }
+        return digitCount > 0;
     }
 }

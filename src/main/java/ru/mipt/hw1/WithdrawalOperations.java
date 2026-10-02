@@ -1,16 +1,15 @@
 package ru.mipt.hw1;
-
-import org.w3c.dom.views.DocumentView;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public interface WithdrawalOperations {
-    double withdraw(double balance, Double amount, BankType bankType);
 
-    default double applyComission(Double amount, BankType bankType) {
+    BigDecimal withdraw(BigDecimal balance, BigDecimal amount, BankType bankType);
+
+    default BigDecimal applyCommission(BigDecimal amount, BankType bankType) {
         if (amount == null || bankType == null) {
-            return 0.0;
+            return BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
         }
-        double comission = amount + bankType.getComissionRate();
-        long rounded = Math.round(comission * 100.0);
-        return rounded / 100.0;
+        return amount.multiply(bankType.getCommissionRate()).setScale(2, RoundingMode.HALF_UP);
     }
 }

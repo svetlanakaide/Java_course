@@ -1,5 +1,7 @@
 package ru.mipt.hw1;
+import java.math.BigDecimal;
 
 public interface DepositOperations {
-    double deposit(double balance, double amount);
+
+    BigDecimal deposit(BigDecimal balance, BigDecimal amount);
 }

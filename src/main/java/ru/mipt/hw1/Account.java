@@ -1,16 +1,20 @@
 package ru.mipt.hw1;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class Account {
     public int cardNumber;
     public int pinCode;
-    public double balance;
+    public BigDecimal balance;
     public BankType bankType;
 
-    public Account(int cardNumber, int pinCode, double balance, BankType bankType) {
+    public Account(int cardNumber, int pinCode, BigDecimal balance, BankType bankType) {
         this.cardNumber = normalizeToDigits(cardNumber, 5);
         this.pinCode = normalizeToDigits(pinCode, 3);
-        long rounded = Math.round(balance * 100.0);
-        this.balance = rounded / 100.0;
+
+        BigDecimal safeBalance = (balance == null || balance.compareTo(BigDecimal.ZERO) < 0) ? BigDecimal.ZERO : balance;
+        this.balance = safeBalance.setScale(2, RoundingMode.HALF_UP);
+
         this.bankType = (bankType == null) ? BankType.NEO : bankType;
     }
 
@@ -23,7 +27,7 @@ public class Account {
             return min;
         }
         if (abs > max) {
-            return max;
+            return abs % (max + 1) < min ? abs % (max + 1) + min : abs % (max + 1);
         }
         return abs;
     }
@@ -36,7 +40,7 @@ public class Account {
         return pinCode;
     }
 
-    public double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
@@ -46,6 +50,6 @@ public class Account {
 
     @Override
     public String toString() {
-        return "[" + bankType.getName() + "] Карта: [" + cardNumber + "], Баланс: [" + String.format("%.2f", balance) + "] руб.";
+        return "[" + bankType.getName() + "] Карта: [" + cardNumber + "], Баланс: [" + balance.toPlainString() + "] руб.";
     }
 }

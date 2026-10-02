@@ -1,23 +1,24 @@
 package ru.mipt.hw1;
+import java.math.BigDecimal;
 
 public enum BankType {
-    NEO("НеоКредит Банк", 0.01),
-    AUM("Арум Финтех", 0.02),
-    VTA("Вектор Альянс Банк", 0.00);
+    NEO("НеоКредит Банк", new BigDecimal("0.01")),
+    AUM("Арум Финтех", new BigDecimal("0.02")),
+    VTA("Вектор Альянс Банк", BigDecimal.ZERO);
 
     public String name;
-    public double comissionRate;
+    public BigDecimal commissionRate;
 
-    BankType(String name, double comissionRate) {
+    BankType(String name, BigDecimal commissionRate) {
         this.name = name;
-        this.comissionRate = comissionRate;
+        this.commissionRate = commissionRate;
     }
 
     public String getName() {
         return name;
     }
 
-    public double getComissionRate() {
-        return comissionRate;
+    public BigDecimal getCommissionRate() {
+        return commissionRate;
     }
 }
